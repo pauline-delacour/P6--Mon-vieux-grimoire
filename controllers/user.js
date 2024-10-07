@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 //Creation de compte
@@ -15,10 +16,13 @@ exports.signup = (req, res, next) => {
         .then(() => res.status(201).json({ message: "Utilisateur Créé!" }))
         .catch((error) => res.status(400).json({ error }));
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ message: error });
+    });
 };
 
-// Authentification 
+// Authentification
 exports.login = (req, res, next) => {
   // Recherche d'utilisateur dans la base de données MondoDB qui a l'email fourni par l'utilisateur
   User.findOne({ email: req.body.email })
@@ -42,12 +46,17 @@ exports.login = (req, res, next) => {
               // Si le mot de passe est correct une reponse 200 est renvoyé contenant l'id utilisateur et un token
               res.status(200).json({
                 userId: user._id,
-                token: "TOKEN",
+                token: jwt.sign(
+                  { userId: user._id },
+                  "RANDOM_TOKEN_SECRET",
+                  { expiresIn: "24h" }
+                ),
               });
             }
           })
           //Si il y a une erreur dans la comparaison on envoie une erreur 500 (erreur server)
           .catch((error) => {
+            console.log(error);
             res.status(500).json({ error });
           });
       }
