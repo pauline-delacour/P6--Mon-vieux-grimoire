@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 //Importation du routeur
 const stuffRoutes = require('../Back-End/routes/stuff');
+const userRoutes = require('../Back-End/routes/user');
 
 //Connexion a MongoDB avec mongoose
 mongoose
@@ -38,6 +39,7 @@ app.use(bodyParser.json());
 
 // Utilisation du routeur par stuffRoutes
 app.use('/api/stuff', stuffRoutes);
-
+//Utilisation du router par userRoutes
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
