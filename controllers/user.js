@@ -2,17 +2,19 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-//Creation de compte
+//Création de compte
 exports.signup = (req, res, next) => {
+  // Utilisation de bcrypt pour hasher le mot de passe de l'utilisateur
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
+      //Création d'un nouvel Objet User avec email et password hashé 
       const user = new User({
-        email: req.body.email,
+        email: req.body.email, // Récupération du mail dans le corps de la requete
         password: hash,
       });
       user
-        .save()
+        .save() //Methode pour enregistrer le nouvel utilisateur 
         .then(() => res.status(201).json({ message: "Utilisateur Créé!" }))
         .catch((error) => res.status(400).json({ error }));
     })
@@ -61,7 +63,7 @@ exports.login = (req, res, next) => {
           });
       }
     })
-    //S'il y a une erreur lors de la recherche utilisation on renvoie une erreur 500
+    //S'il y a une erreur lors de la recherche utilisateur on renvoie une erreur 500
     .catch((error) => {
       res.status(500).json({ error });
     });
