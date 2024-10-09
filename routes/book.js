@@ -8,6 +8,9 @@ const bookControllers = require("../controllers/book");
 // Requete GET qui recupére la liste de tout les objets
 router.get("/", bookControllers.getAllBook);
 
+// Requete GET pour renvoyer un tableau des 3 livres de la base de données
+router.get("/bestrating", bookControllers.bestRating);
+
 // Requete GET pour récupérer un objet par son id
 router.get("/:id", bookControllers.getOneBook);
 

@@ -40,9 +40,9 @@ exports.createBook = (req, res, next) => {
       book
         .save()
         .then(() => res.status(201).json({ message: "objet enregistré" }))
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => res.status(400).json({ message: error.message }));
     })
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => res.status(400).json({ message: error.message }));
 };
 
 //Fonction ratingBook gere la notation de livre
@@ -75,7 +75,7 @@ exports.ratingBook = (req, res, next) => {
           const totalRatings = book.ratings.length;
           let totalSomme = 0;
           //Boucler sur chaque ratings pour recupéré le score et ajouter chaque note a la somme totale
-          book.ratings.foreach((ratingObjet) => {
+          book.ratings.forEach((ratingObjet) => {
             totalSomme += ratingObjet.grade;
           });
           //calculer la moyenne 
@@ -85,10 +85,10 @@ exports.ratingBook = (req, res, next) => {
           book
             .save()
             .then(() => res.status(200).json(book))
-            .catch((error) => res.status(400).json({ error }));
+            .catch((error) => res.status(400).json({ message: error.message }));
         }
       })
-      .catch((error) => res.status(400).json({ error }));
+      .catch((error) => res.status(400).json({ message: error.message }));
   }
 };
 
@@ -120,11 +120,11 @@ exports.modifyBook = (req, res, next) => {
           { ...bookObject, _id: req.params.id }
         )
           .then(() => res.status(200).json({ message: "Book modifié" }))
-          .catch((error) => res.status(400).json({ error }));
+          .catch((error) => res.status(400).json({ message: error.message }));
       }
     })
     .catch((error) => {
-      res.status(400).json({ error });
+      res.status(400).json({ message: error.message });
     });
 };
 
@@ -141,11 +141,11 @@ exports.deleteBook = (req, res, next) => {
             .then(() => {
               res.status(200).json({ message: "Objet supprimé" });
             })
-            .catch((error) => res.status(401).json({ error }));
+            .catch((error) => res.status(401).json({ message: error.message }));
         });
       }
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => res.status(500).json({ message: error.message }));
 };
 
 //Fonction getOneBook pour recupérer un objet Book en particulier par son id
@@ -154,7 +154,7 @@ exports.getOneBook = (req, res, next) => {
   //trouver le Book unique ayant le meme id que le parametre de la requête
   Book.findOne({ _id: req.params.id })
     .then((book) => res.status(200).json(book))
-    .catch((error) => res.status(404).json({ error }));
+    .catch((error) => res.status(404).json({ message: error.message }));
 };
 
 //Fonction getAllBook pour recupérer tous les objets Book
@@ -164,5 +164,16 @@ exports.getAllBook = (req, res, next) => {
       console.log(books);
       res.status(200).json(books);
     })
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => res.status(400).json({ message: error.message }));
 };
+
+//Fonction bestRating pour recupérer les 3 livres les mieux notés
+exports.bestRating = (req, res, next ) => {
+  Book.find()
+  .limit(3)
+  .sort({averageRating: -1})
+  .then((books)=> {
+    res.status(200).json(books);  
+  })
+  .catch ((error) => res.status(400).json({ message : error.message}));
+}
