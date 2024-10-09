@@ -16,11 +16,11 @@ exports.signup = (req, res, next) => {
       user
         .save() //Methode pour enregistrer le nouvel utilisateur 
         .then(() => res.status(201).json({ message: "Utilisateur Créé!" }))
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => res.status(400).json({ message: error.message }));
     })
     .catch((error) => {
       console.log(error);
-      res.status(500).json({ message: error });
+      res.status(500).json({ message: error.message });
     });
 };
 
@@ -50,7 +50,7 @@ exports.login = (req, res, next) => {
                 userId: user._id,
                 token: jwt.sign(
                   { userId: user._id },
-                  "RANDOM_TOKEN_SECRET",
+                  process.env.TOKEN,
                   { expiresIn: "24h" }
                 ),
               });
@@ -59,12 +59,12 @@ exports.login = (req, res, next) => {
           //Si il y a une erreur dans la comparaison on envoie une erreur 500 (erreur server)
           .catch((error) => {
             console.log(error);
-            res.status(500).json({ error });
+            res.status(500).json({ message: error.message });
           });
       }
     })
     //S'il y a une erreur lors de la recherche utilisateur on renvoie une erreur 500
     .catch((error) => {
-      res.status(500).json({ error });
+      res.status(500).json({ message: error.message });
     });
 };
