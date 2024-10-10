@@ -5,13 +5,15 @@ const bodyParser = require("body-parser");
 //Importation du module mongoDB
 const mongoose = require("mongoose");
 //Importation du routeur
-const bookRoutes = require('../Back-End/routes/book');
-const userRoutes = require('../Back-End/routes/user');
+const bookRoutes = require('./routes/book');
+const userRoutes = require('./routes/user');
 //Acceder au path server
 const path = require('path');
 require ('dotenv').config();
 
-//Connexion a MongoDB avec mongoose
+/**
+ * Connexion a MongoDB avec mongoose
+ */
 mongoose
   .connect(
     process.env.MONGOOSE
