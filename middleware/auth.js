@@ -2,7 +2,12 @@ const jwt = require ('jsonwebtoken');
 require ('dotenv').config();
 
 
-// Middleware d'authentification 
+/**
+ * Middleware d'authentification 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 module.exports = (req, res, next) => {
     try {
         //Récuperation du token JWT depuis l'en-tete authorization 

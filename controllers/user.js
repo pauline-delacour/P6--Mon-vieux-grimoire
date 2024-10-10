@@ -2,7 +2,12 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-//Création de compte
+/**
+ * Création de compte
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.signup = (req, res, next) => {
   // Utilisation de bcrypt pour hasher le mot de passe de l'utilisateur
   bcrypt
@@ -24,7 +29,12 @@ exports.signup = (req, res, next) => {
     });
 };
 
-// Authentification
+/**
+ * Authentification
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.login = (req, res, next) => {
   // Recherche d'utilisateur dans la base de données MondoDB qui a l'email fourni par l'utilisateur
   User.findOne({ email: req.body.email })

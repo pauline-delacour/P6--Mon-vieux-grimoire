@@ -1,13 +1,13 @@
-// Importation du modéle Book 
 const Book = require("../models/Book");
-//Importation de sharp qui va permettre de compresser les images
 const sharp = require("sharp");
-//Importation du module fs(file system) permet d'interagir avec le systeme de fichier de l'ordinateur
 const fs = require("fs");
 
-
-
-//Fonction createBook pour creer et enregistrer un nouvel objet Book
+/**
+ * Fonction createBook pour creer et enregistrer un nouvel objet Book
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.createBook = (req, res, next) => {
   // Creation du dossier images s'il n'existe pas
   fs.access("./images", (error) => {
@@ -26,6 +26,7 @@ exports.createBook = (req, res, next) => {
     .webp({ quality: 20 })
     .toFile("./images/" + nameimage)
     .then(() => {
+      //Parse convertit la chaine JSON envoyé dans la requete pour obtenir un objet
       const bookObject = JSON.parse(req.body.book);
       delete bookObject._id;
       delete bookObject._userId;
@@ -45,7 +46,12 @@ exports.createBook = (req, res, next) => {
     .catch((error) => res.status(400).json({ message: error.message }));
 };
 
-//Fonction ratingBook gere la notation de livre
+/**
+ * Fonction ratingBook gere la notation de livre
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.ratingBook = (req, res, next) => {
   const userId = req.auth.userId;
   // Extraction de l'element rating dans le body de la requete
@@ -71,17 +77,17 @@ exports.ratingBook = (req, res, next) => {
           };
           book.ratings.push(newRating);
 
-          // Mettre a jour la moyenne
+          // Mettre à jour la moyenne
           const totalRatings = book.ratings.length;
           let totalSomme = 0;
           //Boucler sur chaque ratings pour recupéré le score et ajouter chaque note a la somme totale
           book.ratings.forEach((ratingObjet) => {
             totalSomme += ratingObjet.grade;
           });
-          //calculer la moyenne 
-          book.averageRating = totalSomme / totalRatings; 
+          //calculer la moyenne
+          book.averageRating = totalSomme / totalRatings;
 
-          // Sauvegarder les modifications dans la base de données 
+          // Sauvegarder les modifications dans la base de données
           book
             .save()
             .then(() => res.status(200).json(book))
@@ -92,7 +98,12 @@ exports.ratingBook = (req, res, next) => {
   }
 };
 
-//Fonction modifyBook pour mettre à jour un objet Book existant par son id
+/**
+ * Fonction modifyBook pour mettre à jour un objet Book existant par son id
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
     ? {
@@ -128,14 +139,23 @@ exports.modifyBook = (req, res, next) => {
     });
 };
 
-// Fonction deleteBook pour supprimer un objet Book par son id
+/**
+ * Fonction deleteBook pour supprimer un objet Book par son id
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.deleteBook = (req, res, next) => {
+  //Recherche du livre dans la base de données en utilisant l'id a partir des parametres de la requete
   Book.findOne({ _id: req.params.id })
     .then((book) => {
+      // Vérification que l'utilisateur authentifié est celui qui a créé le livre 
       if (book.userId != req.auth.userId) {
+        //Si l'id de l'utilisateur est différent de l'id qui a permit a créer le livre => non autorisé
         res.status(403).json({ message: "Non-autorisé" });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
+        //Fonction node qui va supprimé le fichier depuis le dossier Images
         fs.unlink(`images/${filename}`, () => {
           Book.deleteOne({ _id: req.params.id })
             .then(() => {
@@ -148,7 +168,12 @@ exports.deleteBook = (req, res, next) => {
     .catch((error) => res.status(500).json({ message: error.message }));
 };
 
-//Fonction getOneBook pour recupérer un objet Book en particulier par son id
+/**
+ * Fonction getOneBook pour recupérer un objet Book en particulier par son id
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.getOneBook = (req, res, next) => {
   console.log(req.params);
   //trouver le Book unique ayant le meme id que le parametre de la requête
@@ -157,7 +182,12 @@ exports.getOneBook = (req, res, next) => {
     .catch((error) => res.status(404).json({ message: error.message }));
 };
 
-//Fonction getAllBook pour recupérer tous les objets Book
+/**
+ * Fonction getAllBook pour recupérer tous les objets Book
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.getAllBook = (req, res, next) => {
   Book.find()
     .then((books) => {
@@ -167,13 +197,21 @@ exports.getAllBook = (req, res, next) => {
     .catch((error) => res.status(400).json({ message: error.message }));
 };
 
-//Fonction bestRating pour recupérer les 3 livres les mieux notés
-exports.bestRating = (req, res, next ) => {
+/**
+ * Fonction bestRating pour recupérer les 3 livres les mieux notés
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+exports.bestRating = (req, res, next) => {
+  // Récupére tout les elements book
   Book.find()
-  .limit(3)
-  .sort({averageRating: -1})
-  .then((books)=> {
-    res.status(200).json(books);  
-  })
-  .catch ((error) => res.status(400).json({ message : error.message}));
-}
+    // les 3 premiers livre
+    .limit(3)
+    //triées en fonction de la note moyenne dans l'ordre décroissant (-1)
+    .sort({ averageRating: -1 })
+    .then((books) => {
+      res.status(200).json(books);
+    })
+    .catch((error) => res.status(400).json({ message: error.message }));
+};
