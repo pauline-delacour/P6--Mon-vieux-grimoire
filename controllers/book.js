@@ -64,7 +64,7 @@ exports.ratingBook = (req, res, next) => {
   } else {
     Book.findOne({ _id: req.params.id })
       .then((book) => {
-        // Parcours chaque rating , verifie s'il y a deja une note associé a l'utilisateur sinon on creer une note
+        // Parcours chaque rating , verifie s'il y a deja une note associé a l'utilisateur 
         const userRating = book.ratings.find(
           (element) => element.userId === userId
         );
