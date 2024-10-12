@@ -5,6 +5,7 @@
 
 ### Configuration 
 Le projet du front ce trouve ici : https://github.com/OpenClassrooms-Student-Center/P7-Dev-Web-livres
+
 Créez un fichier .env avec comme contenu
 ```
 TOKEN = #le token de signature jwt#
